@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<!--//TODO:
+>Install react
+>Link to db
+>Div_ide timer functionality between components
+>Display deadline and time
+>Val_idate types for form
+>Display date as drop-down
+>Display time as hh:mm:ss
+>Indicate progress
+-->
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>React Tutorial</title>
+    <!-- Not present in the tutorial. Just for basic styling. -->
+    <!--link rel="stylesheet" href="css/base.css" /-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.7/react.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.7/react-dom.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.6.15/browser.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.5/marked.min.js"></script>
+    <style>
+    .row:after{
+        content:'';
+        clear: both;
+        height: 0; 
+        display:block;
+      }
+    .inner-container{
+      width: 90%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .activityList{
+      padding: 0;
+    }
+    form{
+      border: 1px solid gray;
+      padding: 20px 10px;
+    }
+    .activity{
+      border: 1px solid gray;
+      list-style-type: none;
+      padding: 0 10px;
+      margin: 10px 0;
+      position: relative;
+    }
+    .activity *{
+      margin: 5px 0;
+    }
+    .activity h3{
+      display: inline-block;
+      font-variant: small-caps;
+    }
+    .deadline{
+      float: right;
+    }
+    .activity-details{
+      width: 75%;
+      float: left;
+    }
+    .timer{
+      float: left;
+    }
+    .edit{
+      position: absolute;
+      bottom: -5px;
+      right: 0;
+    }
+    .target{
+      display: block;
+      float: right;
+      width: 10%;
+      text-align: right;
+    }
+
+    form span, form .name{
+      display: inline-block;
+      width: 16.66%;
+      margin: 0 10px;
+    }
+
+    .time-input input{
+      width: 30%;
+      margin-left: -1px;
+    }
+    .date-input select{
+      width: 33.33%;
+    }
+
+    .date-input{
+      width: 25%
+    }
+    form .name{
+      width: 33.33%
+    }
+    form input[type='submit']{
+      float: right;
+      background-color: transparent;
+      border-radius: 100%;
+      width: 28px;
+      height: 28px;
+      border: none;
+      background-color: gray;
+      font-size: 24px;
+      padding: 0;
+      color: white;
+      margin:0;
+    }
+
+    .progress-bar{
+      height: 15px;
+      width: 85%;
+      border: 1px solid gray;
+      float: left;
+    }
+    .delete{
+      position: absolute;
+      top: -5px;
+      right: 0;
+
+    }
+
+
+    .complete{
+      position: absolute;
+      top: 25px;
+      right: 20px;
+      width: 20px;
+      height: 20px;
+      
+      border: 1px solid gray
+    }
+
+    .delete,.edit    { width: 20px;
+      height: 20px;
+      padding: 0;
+      background-color: gray;
+      border: none;
+      color: white;
+}
+    .timer{
+      width: 20%;
+      text-align: center;
+      padding: 0 10px;
+    }
+
+    .timer span{
+      padding: 0 10px;
+    }
+
+    .timer button{
+      width: 32px;
+      height: 32px;
+      border-radius: 100%;
+      border: none;
+      font-weight: bold;
+      font-size: 18px;
+    }
+    @media only screen and (min-width: 768px){
+      .inner-container{
+        width: 60%;
+      }
+    }
+    </style>
+  </head>
+  <body>
+
+    <div id = 'form-space'></div>
+    <div id="content" class = 'inner-container'></div>
+    <!--script type="text/babel" src="scripts/example.js"></script-->
+
+    <script type="text/babel">  
+        var ActivityBox = React.createClass({
+          getInitialState: function(){
+            return {
+                    data: [],
+                    edit: null,
+                    delete: null
+                    };
+          },    
+
+          loadActivitiesFromServer: function(){
+            $.ajax({
+              url: this.props.url,
+              dataType: 'json',
+              cache: false,
+              success: function(data){
+                console.log(data)
+                this.setState({data: data});//The key to dynamic updates is the call to this.setState(). We replace the old array of comments with the new one from the server and the UI automatically updates itself. 
+              }.bind(this),
+              error: function(xhr, status, err){
+                console.error(this.props.url, status, err.toString());
+              }.bind(this)
+            });
+          },     
+          componentDidMount: function(){
+            this.loadActivitiesFromServer();
+          },
+          formDate: function(d,m,y){
+            return new Date(d+' '+m+' '+y).toString();
+          },
+          calculateSeconds:function(h,m,s){
+            return Number(h)*3600 + Number(m)*60 + Number(s);
+          },
+          handleAdd: function(params){
+            var activity = {
+              name: params.name,
+              target: this.calculateSeconds(params.hours,params.minutes,params.seconds),
+              deadline: this.formDate(params.day,params.month,params.year)
+            }
+            $.ajax({
+              url: "http://localhost:8080/add",
+              dataType: 'json',
+              type: 'POST',
+              data: activity,
+              success: function(data){
+                this.setState({data: data});
+              }.bind(this),
+              error: function(xhr, status, err){
+                console.error(this.props.url, status, err.toString());
+              }.bind(this)
+            });
+          },  
+          handleDeleteClick:function(id){
+            alert('Going to delete '+id);
+          }, 
+          handleEditClick: function(id){
+            var toEdit = this.state.data.filter(function(a){
+              return a._id == id
+            }.bind(this))[0];
+            this.setState({edit:toEdit})
+            console.log('toEdit is: ', toEdit);
+          },
+          handleEdit: function(params,choice){
+            if(choice == 'OK'){
+              alert(JSON.stringify(params));
+              console.log('Now to send AJAX request')
+            }
+            if(choice == 'Cancel'){
+              console.log('Form now hidden')
+            }
+            this.setState({edit:null})
+          },
+          render: function(){
+            return(
+              <div className = "activityBox">
+                <h1> My stuff </h1>
+                <AddForm data = {{
+                                  name:'',
+                                  day:'',
+                                  month:'',
+                                  year:'',
+                                  hours:'',
+                                  minutes:'',
+                                  seconds: '',
+                                }}
+                        onAdd = {this.handleAdd}/>
+                  {this.state.edit?<AddForm data = {this.state.edit}
+                            onAdd = {this.handleEdit}/>:null}
+                <ActivityList data = {this.state.data} 
+                              onEditClick = {this.handleEditClick}
+                              onDeleteClick = {this.handleDeleteClick}/>
+              </div>
+              );
+            }
+          });    
+
+          var ActivityList = React.createClass({
+          render: function(){
+            var activityBlocks = this.props.data.map(function(activity){
+              return(
+                  <Activity name = {activity.name} 
+                            key = {activity._id} 
+                            id = {activity._id} 
+                            day = {activity.day}
+                            month = {activity.month}
+                            year = {activity.year}
+                            hours = {activity.hours}
+                            minutes = {activity.minutes}
+                            seconds = {activity.seconds}
+                            onEditClick = {this.props.onEditClick}
+                            onDeleteClick = {this.props.onDeleteClick}/>
+                );
+            }.bind(this));
+            return(
+              <ul className = "activityList">
+                {activityBlocks}
+              </ul>
+              );
+          }
+        });
+
+        var Activity = React.createClass({
+          getTime: function(fullSeconds){
+            var hours = Math.floor(fullSeconds/3600);
+            var minutes =  Math.floor((fullSeconds - hours*3600)/60);
+            var seconds = fullSeconds - hours*3600 - minutes*60;
+            var time = [hours, minutes];
+            if(seconds){time.push(seconds)};
+            return time;
+          },          
+          zeroPad: function(t){
+              var tStr = String(t);
+              return (tStr.length-1)?tStr:'0'+tStr;
+            },
+          formatTime: function(){
+            return this.getTime(Number(this.props.target)).map(function(t){
+              var t = String(t);
+              return t.length==1?'0'+String(t):t;
+            }).join(':')
+          },
+          render: function(){
+            return(
+              <li className = "activity row">
+                  <div className = 'activity-details'>
+                    <div className = 'row'>
+                      <h3 className = "activityName">
+                        {this.props.name}
+                      </h3>
+                      {this.props.day?
+                      <span className = 'deadline'>
+                      <span>{this.props.day} </span>
+                      <span>{this.props.month} </span>
+                      <span>{this.props.year}</span>
+                      </span>
+                      :null}
+                    </div>
+                    <div className = 'row'>
+                      <div className = 'progress-bar'></div>
+                      <span className = 'target'>
+                      <span>{this.zeroPad(this.props.hours)}:</span>
+                      <span>{this.zeroPad(this.props.minutes)}:</span>
+                      <span>{this.zeroPad(this.props.seconds)}</span>
+                      </span>
+                    </div>
+                  </div>
+                  <div className = 'timer'>
+                    <button> > </button>
+                    <div><span>5</span><span>10</span><span>15</span></div>
+                  </div> 
+                <input type = 'checkbox' className = 'complete'/> 
+                
+                 <ModifyButton className = 'edit' onClick = {function(){
+                              this.props.onEditClick(this.props.id)
+                              }.bind(this)}
+                    value = '\\'/>
+                 <ModifyButton className = 'delete' onClick = {function(){
+                              this.props.onDeleteClick(this.props.id)
+                              }.bind(this)}
+                    value = 'X'/>    
+              </li>
+              ); 
+          }
+        });
+
+        var ModifyButton = React.createClass({
+          render: function(){
+            return(
+              <button className = {this.props.className} onClick = {this.props.onClick}>
+                {this.props.value}
+              </button>
+              )
+          }
+        })
+
+        var AddForm= React.createClass({
+          getInitialState: function(e){
+            return this.props.data
+          },  
+          componentWillReceiveProps: function(nextProps){
+            this.setState(nextProps.data);
+          },
+          handleNameChange: function(e){
+            this.setState({name:e.target.value},function(){
+              console.log(this.state.name)
+            })
+          },
+          handleDayChange: function(e){
+            this.setState({day:e.target.value},function(){
+              console.log(this.state.day)
+            })
+          },
+          handleMonthChange: function(e){
+            this.setState({month:e.target.value},function(){
+              console.log(this.state.month)
+            })          
+          },
+          handleYearChange: function(e){
+            this.setState({year:e.target.value},function(){
+              console.log(this.state.year)
+            })          
+          },
+          handleHourChange: function(e){
+            if(e.target.parentNode.id == 'target'){
+              this.setState({hours:e.target.value},function(){
+              console.log(this.state.hours)
+            })      
+            }
+            if(e.target.parentNode.id == 'achieved'){
+              this.setState({aHours:e.target.value},function(){
+              console.log(this.state.aHours)
+            })      
+            }
+          },
+          handleMinuteChange: function(e){
+            if(e.target.parentNode.id == 'target'){
+              this.setState({minutes:e.target.value},function(){
+              console.log(this.state.minutes)
+            })      
+            }
+            if(e.target.parentNode.id == 'achieved'){
+              this.setState({aMins:e.target.value},function(){
+              console.log(this.state.aMins)
+            })      
+            }
+          },
+          handleSecondChange: function(e){
+            if(e.target.parentNode.id == 'target'){
+              this.setState({seconds:e.target.value},function(){
+              console.log(this.state.seconds)
+            })      
+            }
+            if(e.target.parentNode.id == 'achieved'){
+              this.setState({aSecs:e.target.value},function(){
+              console.log(this.state.aSecs)
+            })      
+            }
+          },
+          onClickAdd: function(e){
+            //Add an additional feature to ensure that target does not 
+            //have zero as value
+            e.preventDefault();
+            var params = {};
+            var fields = ['name', 'day','month','year','hours','minutes','seconds']
+            console.log('this.state: ', this.state);
+            for(var f=0;f<fields.length;f++){
+              var field = fields[f];
+              var val = this.state[field];
+
+              if(val || val === "0"|| val === 0){
+                params[field] = val;
+              }
+              else{
+                alert('Please fill in the form!')
+                return;
+              }
+            }
+            this.props.onAdd(params,e.target.value);
+            //Only relevant for add - for edit form goes away when you click
+            this.setState(this.props.data);
+          },
+          render: function(){
+
+            return (
+              <form onSubmit = {this.onClickAdd}>
+                <input
+                className = 'name'
+                type = "text"
+                placeholder ={!this.state.name?'Activity':null}
+                value = {this.state.name}
+                onChange = {this.handleNameChange}
+                />
+
+                <DateInput  values = {{day:this.state.day,
+                                        month: this.state.month,
+                                        year: this.state.year}}
+                            onDayChange = {this.handleDayChange}
+                            onMonthChange = {this.handleMonthChange}
+                            onYearChange = {this.handleYearChange}/>
+                <TimeInput id = 'target' 
+                           values = {{hours:this.state.hours,
+                                        minutes: this.state.minutes,
+                                        seconds: this.state.seconds}}
+                            onHourChange = {this.handleHourChange}
+                            onMinuteChange = {this.handleMinuteChange}
+                            onSecondChange = {this.handleSecondChange}/>
+                {this.state.achieved!=undefined?
+                <TimeInput id = 'achieved'
+                        values = {{hours:this.state.hours,
+                                      minutes: this.state.minutes,
+                                      seconds: this.state.seconds}}
+                        onHourChange = {this.handleHourChange}
+                        onMinuteChange = {this.handleMinuteChange}
+                        onSecondChange = {this.handleSecondChange}/>:null}
+                {this.state.achieved==undefined?       
+                <input type = 'submit' value = '+'/>:
+                <span className = 'edit-inputs'>
+                  <input type = 'button' value = 'OK' onClick = {this.onClickAdd}/>
+                  <input type = 'button' value = 'Cancel' onClick = {this.onClickAdd}/>
+                </span>}
+              </form>
+              );
+          }
+        });
+
+
+        var TimeInput = React.createClass({
+          render: function(){
+            return(
+              <span id = {this.props.id} className = 'time-input'>
+                <input type="number" 
+                placeholder = {!this.props.values.hours?'HH':null}
+                name="hours" 
+                min="0" 
+                max="99"
+                onChange = {this.props.onHourChange}
+                value = {this.props.values.hours}
+                />
+                <input type="number" 
+                placeholder = {!this.props.values.minutes?'MM':null}
+                name="minutes" 
+                min="0" 
+                max="59"
+                onChange = {this.props.onMinuteChange}
+                value = {this.props.values.minutes}
+                />
+                <input type="number" 
+                placeholder = {!this.props.values.seconds?'SS':null}
+                name="seconds" 
+                min="0" 
+                max="59"
+                onChange = {this.props.onSecondChange}
+                value = {this.props.values.seconds}
+                />
+              </span>
+              )
+          }
+        })
+
+
+        var DateInput = React.createClass({
+          render: function(){
+            var months = ['Jan',
+              'Feb',
+              'Mar',
+              'Apr',
+              'May',
+              'Jun',
+              'Jul',
+              'Aug',
+              'Sep',
+              'Oct',
+              'Nov',
+              'Dec']
+            return(
+              <span className = 'date-input'>
+                <RangeSelect label = 'Day'
+                lower = {1}
+                upper = {32}
+                name = 'day'  
+                onChange = {this.props.onDayChange}
+                value = {this.props.values.day}
+                />
+                <RangeSelect label = 'Month'
+                list = {months.map(function(month,n){
+                  return <option key = {n} value = {n}>{month}</option>
+                })}
+                name = 'month'  
+                onChange = {this.props.onMonthChange}
+                value = {
+                  months.indexOf(this.props.values.month)>=0?
+                  months.indexOf(this.props.values.month):
+                  this.props.values.month}
+                />
+                <RangeSelect label = 'Year'
+                lower = {2016}
+                upper = {2018}
+                name = 'year'  
+                onChange = {this.props.onYearChange}
+                value = {this.props.values.year}
+                />
+              </span>                   
+              )
+          }
+        })
+
+
+        var RangeSelect = React.createClass({
+          range: function(i,u,inc,a){
+                var inc = inc?inc:1;
+                var a = a?a:[];
+                if(u-i <= 0){
+                  return a;
+                }
+                else{
+                  a.push(i);
+                  return this.range(i+inc,u,inc,a);
+                }
+              },
+          mapToOption: function(a,callback){
+            return a.map(function(i){
+              var i = callback?callback(i):i;
+              return <option key = {i} value = {i}>{i}</option>
+            })
+            },
+          render: function(){
+            return(
+            <select onChange = {this.props.onChange} 
+                    value = {this.props.value}>
+            <option label = {this.props.label}></option>
+              {this.props.list||this.mapToOption(this.range(this.props.lower,
+                                                            this.props.upper,
+                                                            this.props.inc),
+                                                            this.props.callback)}
+            </select>
+            )
+          }
+        })
+
+
+
+        var ACTIVITIES = [
+            {_id:1,
+              name: 'Java',
+             target: 50*3600,
+             deadline: '31 March 2016',
+             achieved: 0
+            },
+            {_id:2,
+              name: 'Algorithms',
+             target: 50*3600,
+             deadline: '31 March 2016',
+             achieved: 0
+            },
+            {_id:3,
+              name: 'Cryptography',
+             target: 50*3600,
+             deadline: '31 March 2016',
+             achieved: 0
+            },
+            {_id:4,
+              name: 'Machine Learning',
+             target: 50*3600,
+             deadline: '31 March 2016',
+             achieved: 0
+            },
+            {_id:5,
+              name: 'Business',
+             target: 50*3600,
+             deadline: '31 March 2016',
+             achieved: 0
+            }
+            ]
+
+        ReactDOM.render(
+          <ActivityBox url = "http://localhost:8080/read"/>,
+          document.getElementById('content')
+        );
+    </script>
+
+  </body>
+</html>

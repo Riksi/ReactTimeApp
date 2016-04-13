@@ -1,11 +1,27 @@
+//Modify so that achieved is something that
+//alters only through incrementation - it should no
+//longer be part of the form
+//Reason for this is that now daily
+//records will be maintained
+
+
+
+//Need to modify so that achieved hours only stored in the Day object
+//When you increment time, this is stored in the Day object
+//The achieved item is calculated by aggregating the Day objects 
+
+
+
+
 var mongoose = require('mongoose');
 var schema = require('./schema');
+var daySchema = require('./daySchema');
 
 mongoose.connect('mongodb://localhost:27017/discrete_time_test');
 
 // Parameters are: model name, schema, collection name
 var Activity = mongoose.model('Activity', schema, 'activity');
-
+var Day = mongoose.model('Day', daySchema, 'day');
 /*var act = new Activity({
   name: 'Machine Learning',
   target: 50,
@@ -23,25 +39,35 @@ var Activity = mongoose.model('Activity', schema, 'activity');
   }
 });*/
 
-
+//Find out how to add relative validation - how would this 
+//work if you are updating both field
+//Basic possibility - if both exist, then run two updates
+//with target first; alternatively run comparison before
+//updating if both exist
 
 var add = function(params,res){
-
+  console.log(params.deadline);
   var act = new Activity(params);
   act.save(function(error, saved) {
     if (error) {
       res.json(error);
     }
     else
-      {readAll(res)};
+      { Activity.find(params,function(err,found){
+        console.log(found);
+      })
+        readAll(res)
+
+      };
   });
 };
 
-var read = function(params,res){
-    Activity.findById(id,params,function(err,act){
-    if(err){res.json(err);}
+var read = function(id){
+    Activity.findById(id,function(err,act){
+    if(err){console.log(err);}
     else{ 
-      res.json(act);}
+      console.log(act);
+    }
   })
 }
 
@@ -49,7 +75,24 @@ var readAll = function(res){
   Activity.find({},function(err,found){
     if(err){res.json(err);}
     else{ 
-      res.json(found);}
+      
+      res.json(found);
+
+    }
+  })
+}
+
+var cmp = function(id,complete,res){
+  Activity.findById(id,function(err,act){
+    if(err){res.json(err);}
+    else{
+      //the recorded field simply backs up the data when you
+      //mark complete without actually adding the hours
+      //-in case you want to return to the previous state
+      var rcdData = complete?act.achieved:0;
+      var acdData = complete?act.target:act.recorded;
+      edit(id,{recorded: rcdData, achieved: acdData, complete: complete == true},res);
+    }
   })
 }
 
@@ -63,23 +106,72 @@ var del = function(id,res){
 }
 
 var edit = function(id,params,res){
-  Activity.findByIdAndUpdate(id,{$set: params},function(err,result){
-    if(err){res.json(err);}
-    else{ 
-      //for the moment returns all the data
-      readAll(res);}
-  })
+  console.log(Number(params.achieved) > Number(params.target))
+  //Number(undefined) > anything evaluates to false
+  // so don't need to ensure this field has been defined
+  if(Number(params.achieved) > Number(params.target)){
+    res.json({message: "Please enter a valid value"});
+  }
+  else{
+    Activity.findByIdAndUpdate(id,{$set: params},
+      { runValidators: true },
+      function(err,result){
+      if(err){res.json(err);}
+      else{ 
+        read(id);
+        readAll(res);
+      }
+    })
+  }
 }
 
-var update = function(id,params){
+var update = function(id,params,res){
+  var thisDate = new Date(Date.now());
+    var upsertData = {
+      $set: {date: thisDate,
+              activity_id: id},
+      $inc: params
+    }
+  var lowerDate = new Date(thisDate.toDateString())
+  var upperDate = new Date(lowerDate);
+  upperDate.setHours(24);
+
     Activity.findByIdAndUpdate(id,{$inc: params},function(err,result){
-    if(err){console.log(err)};
-    console.log(result);
+    if(err){res.json(err);}
+    else{ 
+      read(id);
+      Day.update({activity_id: id, date: {$gte: lowerDate, $lt: upperDate} },
+        upsertData,{upsert: true, multi: true},function(err, result){
+          if(err){
+            res.json(err)
+          }
+          else{
+            console.log(result);
+            readAll(res);
+          }
+      });
+    }
   })
 }
+ 
+
+
+var readDate = function(res){
+  var lowerDate = new Date((new Date("19 May 2016")).toDateString())
+  var upperDate = new Date(lowerDate);
+  upperDate.setHours(24);
+  /*Activity.update({deadline: {$gte: lowerDate, $lt: upperDate} },{$set:{deadline:upperDate}},{multi: true},function(err, result){
+    err?res.json(err):res.json(result);
+  });
+  Activity.find({deadline: {$gte: lowerDate, $lt: upperDate} },function(err, result){
+    err?res.json(err):res.json(result);
+  });*/
+}
 module.exports = {add: add, 
-                  read: read, 
+                  read: read,
+                  cmp: cmp, 
                   del:del, 
                   edit:edit, 
                   update:update,
-                  readAll: readAll};
+                  readAll: readAll,
+                  readDate: readDate};

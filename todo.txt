@@ -1,0 +1,6 @@
+[]Save increments to Day rather than to Activity
+[]Retrieve by aggregation from Day rather than from Activity
+[]Display these in the front-end
+[]Validate all fields for all forms
+[]Edit achieved times by day and modify the existing interface
+[]Modify the option to mark complete 

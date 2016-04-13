@@ -16,7 +16,7 @@ app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x
 
 // Calls read and shows ongoing tasks
 app.get('/', function (req, res) {
-   res.sendFile(path.resolve("C:/Users/Anush/EECS/React/public/index.html"));
+   res.sendFile(path.resolve("C:/Users/Anush/Toys/Discrete_Time/ReactApp/index.html"));
 })
 
 
@@ -36,11 +36,25 @@ app.get('/read', function(req,res){
 	//res.json(acts);
 });
 
+app.post('/complete', function(req,res){
+	mongoose_handlers.cmp(req.body._id,Number(req.body.complete),res);
+});
+
 
 //Called when you delete a task
 app.post('/delete', function(req,res){
 	mongoose_handlers.del(req.body._id,res);
 });
+
+
+app.get('/validate', function(req,res){
+	mongoose_handlers.add({
+		name: 'Test',
+		target: 6*3600,
+		deadline: new Date(Date.now())
+	},res)
+})
+
 
 //Called when you edit attributes, increment time, finish
 app.post('/edit', function(req,res){
@@ -50,10 +64,15 @@ app.post('/edit', function(req,res){
 });
 
 
+app.get('/read_date', function(req,res){
+	mongoose_handlers.readDate(res);
+});
+
+
 app.post('/update', function(req,res){
 	//need a way to link the id of the 
-	mongoose_handlers.update(req.body.id,{target:req.body.inc});
-	res.redirect('/');
+	mongoose_handlers.update(req.body._id,{achieved:Number(req.body.inc)*60},res);
+
 });
 // Gets details of tasks in a particular category
 app.get('/detail', function(req,res){

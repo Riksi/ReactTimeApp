@@ -29,6 +29,7 @@ var Activity = new mongoose.Schema({
     type: Boolean,
     default: false
   }
+
 });
 
 var MONTHS = ['Jan',

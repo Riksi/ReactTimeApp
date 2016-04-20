@@ -30,6 +30,10 @@ app.post('/add', function(req,res){
 	//res.redirect('/');
 });
 
+app.get('/across',function(req,res){
+	mongoose_handlers.readAcross(res);
+})
+
 //Both the main page and the detail page call this 
 app.get('/read', function(req,res){
 	mongoose_handlers.readAll(res);

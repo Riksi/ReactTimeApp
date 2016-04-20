@@ -16,7 +16,7 @@ Activity.find({},function(err,found){
 	else{
 		var acts = found.map(function(act){
 			return({
-				activity_id: act._id,
+				activityId: act._id,
 				achieved: act.achieved/8.0
 			})
 		});

@@ -1,0 +1,131 @@
+<!--Hide the seconds for timer-->
+<style type="text/css">
+*{
+	box-sizing: border-box;
+}	
+.row{
+	border: 1px solid black;
+	margin: auto;
+}
+.row:after{
+	content:'';
+	clear: both;
+	height: 0; 
+	display:block;
+}
+.row>div{
+	float: left;
+	border: 1px solid black;
+	height:100px;
+}
+	.main-details{
+	width:70%;
+}
+
+.deadline{
+	float: right;
+}
+.times span, .timer span{
+	display: block;
+	text-align: center;
+}
+.timer{
+	width: 20%;
+}
+
+.timer button{
+	margin: auto;
+	display: block;
+	text-align: center;
+}
+.modify-options{
+	width: 10%;
+	position: relative;
+}
+
+.modify-options button, .modify-options input{
+	position: absolute;
+	right: 0;
+	width: 20px;
+	height: 20px;
+	padding: 0;
+	margin: 0;
+}
+
+.modify-options button:first-of-type{
+	top: 0;
+}
+
+.modify-options button:nth-of-type(2) {
+	bottom: 0;
+}
+
+.modify-options input{
+	top: 40px;
+}
+
+.times, .percent, .timer .timer-inc{
+	display: none;
+}
+
+.progress-bar{
+	border: 1px solid red;
+	height: 20px;
+	width: 90%;
+	display: inline-block;
+}
+
+@media only screen and (min-width: 768px){
+
+	.row{
+			width: 60%;
+	}
+
+	.main-details{
+	width: 65%;
+	}
+	.times{
+		width: 15%;
+	}
+	.timer{
+		width: 15%;
+	}
+
+	.modify-options{
+		width: 5%;
+	}	
+
+	.times, .percent{
+		display: inline-block;
+	}
+	.timer .timer-inc{
+		display: block;
+	}
+}
+</style>
+<div class ='row'>
+	<div class = 'main-details'>
+		<div>
+		<span>Name</span>
+		<span class = 'deadline'>Deadline</span>
+		</div>
+		<div class = 'base'>
+			<div class = 'progress-bar'>Progress</div>
+			<span class = 'percent'>%</span>
+		</div>
+	</div>
+	<div class = 'times'>
+		<span>Target</span>
+		<span class = 'base'>Achieved</span>
+	</div>
+	<div class = 'timer'>
+		<span>Timer display</span>
+		<button>></button>
+		<span class = 'timer-inc base'>Increments</span>
+	</div>
+	<div class = 'modify-options'>
+		<button>X</button>
+		<input type = 'checkbox'>
+		<button>//</button>
+	</div>
+</div>

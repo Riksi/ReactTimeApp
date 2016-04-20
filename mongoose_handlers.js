@@ -71,16 +71,50 @@ var read = function(id){
   })
 }
 
+
+var readAcross = function(res){
+  Activity.find({},function(err,found){
+    if(err){res.json(err);}
+    else{
+              found.forEach(function(act){
+                Day.aggregate(
+                  [ {$match: {activityId:act._id}},
+                    {$group:{_id:null,achieved: {$sum: "$achieved"}}}
+                  ]
+                  ).exec(function(e,f){
+                    if(e){act['achieved'] = null}
+                    else{act['achieved'] = f.length?f[0].achieved:0;}
+                })
+            })
+            res.json(found);
+        }
+    })
+  }
+
 var readAll = function(res){
   Activity.find({},function(err,found){
     if(err){res.json(err);}
     else{ 
-      
+
       res.json(found);
+
 
     }
   })
 }
+
+
+/*var readAll = function(res){
+  Activity.find({},function(err,found){
+    if(err){res.json(err);}
+    else{ 
+      found.map(function)
+    }
+  })
+}*/
+
+
+
 
 var cmp = function(id,complete,res){
   Activity.findById(id,function(err,act){
@@ -140,7 +174,7 @@ var update = function(id,params,res){
     if(err){res.json(err);}
     else{ 
       read(id);
-      Day.update({activity_id: id, date: {$gte: lowerDate, $lt: upperDate} },
+      Day.update({activityId: id, date: {$gte: lowerDate, $lt: upperDate} },
         upsertData,{upsert: true, multi: true},function(err, result){
           if(err){
             res.json(err)
@@ -174,4 +208,5 @@ module.exports = {add: add,
                   edit:edit, 
                   update:update,
                   readAll: readAll,
+                  readAcross: readAcross,
                   readDate: readDate};

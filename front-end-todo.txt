@@ -1,0 +1,7 @@
+[/]Fix percentages
+[]Add pictures for stop and play
+[]Add class when complete is true
+[]Redo the layout, starting with box design
+which should merely replicate the wireframe
+[]Make modals
+[]Do the same for the form layout (i.e. box)

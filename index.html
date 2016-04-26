@@ -497,7 +497,7 @@ h1 span{
               dataType: 'json',
               cache: false,
               success: function(data){
-                console.log(data)
+                //console.log(data)
                 this.setState({data: data});//The key to dynamic updates is the call to this.setState(). We replace the old array of comments with the new one from the server and the UI automatically updates itself. 
               }.bind(this),
               error: function(xhr, status, err){
@@ -509,7 +509,7 @@ h1 span{
             this.loadActivitiesFromServer();
           },
           formDate: function(d,m,y){
-            console.log(new Date(y,m,d));
+            console.log(Date(y,m,d).toString());
             return new Date(y,m,d).toString();
           },
           calculateSeconds:function(h,m,s){
@@ -551,7 +551,7 @@ h1 span{
           },
           handleDeleteClick:function(id){
             this.setState({delete: id},function(){
-              console.log(this.state.delete)
+              //console.log(this.state.delete)
             }.bind(this));
           }, 
           handleOKDelete:function(){
@@ -580,7 +580,7 @@ h1 span{
               return a._id == id
             }.bind(this))[0];
             this.setState({edit:toEdit})
-            console.log('toEdit is: ', toEdit);
+            //console.log('toEdit is: ', toEdit);
           },
           handleEdit: function(params,choice){
             var activity = {
@@ -598,7 +598,7 @@ h1 span{
                 type: 'POST',
                 data: {_id: this.state.edit._id, params: activity},
               success: function(data){
-                console.log('Returned data is: ', data);
+                //console.log('Returned data is: ', data);
                 data["message"]?alert(data["message"]):this.setState({data: data});
               }.bind(this),
                 error: function(xhr, status, err){
@@ -607,7 +607,7 @@ h1 span{
               });
             }
             //if(choice == 'Cancel'){
-             // console.log('Form now hidden')
+             // //console.log('Form now hidden')
             //}
             this.setState({edit:null})
           },
@@ -754,7 +754,7 @@ h1 span{
           render: function(){
             var inc = [5,10,15];
             var displayTime = this.secondsToHMS(this.state.timerSeconds);
-            console.log(displayTime);
+            //console.log(displayTime);
             return(
               <li className = {"activity row" + (this.props.complete?
               ' complete':'')}>
@@ -909,57 +909,57 @@ h1 span{
           },
           handleNameChange: function(e){
             this.setState({name:e.target.value},function(){
-              console.log(this.state.name)
+              //console.log(this.state.name)
             })
           },
           handleDayChange: function(e){
             this.setState({day:e.target.value},function(){
-              console.log(this.state.day)
+              //console.log(this.state.day)
             })
           },
           handleMonthChange: function(e){
             this.setState({month:e.target.value},function(){
-              console.log(this.state.month)
+              //console.log(this.state.month)
             })          
           },
           handleYearChange: function(e){
             this.setState({year:e.target.value},function(){
-              console.log(this.state.year)
+              //console.log(this.state.year)
             })          
           },
           handleHourChange: function(e){
             if(e.target.parentNode.id == 'target'){
               this.setState({hours:e.target.value},function(){
-              console.log(this.state.hours)
+              //console.log(this.state.hours)
             })      
             }
             if(e.target.parentNode.id == 'achieved'){
               this.setState({aHours:e.target.value},function(){
-              console.log(this.state.aHours)
+              //console.log(this.state.aHours)
             })      
             }
           },
           handleMinuteChange: function(e){
             if(e.target.parentNode.id == 'target'){
               this.setState({minutes:e.target.value},function(){
-              console.log(this.state.minutes)
+              //console.log(this.state.minutes)
             })      
             }
             if(e.target.parentNode.id == 'achieved'){
               this.setState({aMinutes:e.target.value},function(){
-              console.log(this.state.aMinutes)
+              //console.log(this.state.aMinutes)
             })      
             }
           },
           handleSecondChange: function(e){
             if(e.target.parentNode.id == 'target'){
               this.setState({seconds:e.target.value},function(){
-              console.log(this.state.seconds)
+              //console.log(this.state.seconds)
             })      
             }
             if(e.target.parentNode.id == 'achieved'){
               this.setState({aSeconds:e.target.value},function(){
-              console.log(this.state.aSeconds)
+              //console.log(this.state.aSeconds)
             })      
             }
           },
@@ -972,7 +972,7 @@ h1 span{
             if(this.state.aHours != undefined){
               fields = fields.concat(['aHours','aMinutes','aSeconds']);
             }
-            console.log('this.state: ', this.state);
+            //console.log('this.state: ', this.state);
             for(var f=0;f<fields.length;f++){
               var field = fields[f];
               var val = this.state[field];

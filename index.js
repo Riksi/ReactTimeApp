@@ -83,5 +83,7 @@ app.post('/update', function(req,res){
 app.get('/detail', function(req,res){
 	res.send('Details ');
 })
-
-app.listen(8080);
+var port = process.env.PORT || 8080;
+app.listen(port, function() {
+    console.log('Our app is running on http://localhost:' + port);
+});

@@ -10,7 +10,7 @@
 //When you increment time, this is stored in the Day object
 //The achieved item is calculated by aggregating the Day objects 
 
-
+var MAX_ENTRIES = 100;
 var port = process.env.PORT || 8080;
 
 var mongoose = require('mongoose');
@@ -45,6 +45,17 @@ var Day = mongoose.model('Day', daySchema, 'day');
 //Basic possibility - if both exist, then run two updates
 //with target first; alternatively run comparison before
 //updating if both exist
+
+var addIf = function(params,res){
+  Activity.find({},function(err,found){
+    if(err){res.json(err)}
+    else{
+      console.log(found.length);
+      if(found.length < MAX_ENTRIES){add(params,res)}
+      else{res.json({'full': true});}
+    }
+  });
+}
 
 var add = function(params,res){
   console.log(params.deadline);
@@ -202,7 +213,7 @@ var readDate = function(res){
     err?res.json(err):res.json(result);
   });*/
 }
-module.exports = {add: add, 
+module.exports = {add: addIf, 
                   read: read,
                   cmp: cmp, 
                   del:del, 

@@ -1,20 +1,8 @@
-[]Save increments to Day rather than to Activity
-[]Retrieve by aggregation from Day rather than from Activity
-[]Display these in the front-end
-[]Validate all fields for all forms
-[]Edit achieved times by day and modify the existing interface
-[]Modify the option to mark complete 
-
->FIRSTLY ALLOW MODIFICATION OF FIELDS FROM THE LIST
->THIS WILL MEAN THERE IS NO LONGER THE IF-THEN PROBLEMS
->BASICALLY NEED TO ASSOCIATE AN INPUT WITH EACH FIELD
-
-
-ADD
-[]Need to store date on which started activity 
-[]Add this automatically but allow modification
-
-EDIT 
-[]Add an additional date input for achieved
-[]Add the relevant React functions
-[]Achieved date should range from start to deadline
+TODO:
+>Tidy everything 
+>Better error messages for form
+>Install react 
+>Sign-up
+>Day by day records
+>Styling
+>Testing

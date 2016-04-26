@@ -588,7 +588,7 @@ h1 span{
               target: this.calculateSeconds(params.hours,params.minutes,params.seconds),
               achieved: this.calculateSeconds(params.aHours,params.aMinutes,params.aSeconds),
               deadline: params.month.length > 2
-                ?new Date(params.day + ' ' +params.month + ' ' + params.year).toString()
+                ?new Date(params.day + ' ' +params.month + ' ' + params.year).toLocaleString()
                 :this.formDate(params.day,params.month,params.year)
             }         
             if(choice == 'OK'){

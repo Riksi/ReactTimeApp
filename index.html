@@ -509,7 +509,7 @@ h1 span{
             this.loadActivitiesFromServer();
           },
           formDate: function(d,m,y){
-            console.log(Date(y,m,d).toString());
+            console.log(new Date(y,m,d).toString());
             return new Date(y,m,d).toString();
           },
           calculateSeconds:function(h,m,s){

@@ -509,8 +509,8 @@ h1 span{
             this.loadActivitiesFromServer();
           },
           formDate: function(d,m,y){
-            console.log(new Date(y,m,d).toString());
-            return new Date(y,m,d).toString();
+            //console.log(new Date(y,m,d).toString());
+            return new Date(y,m,d).toLocaleString();
           },
           calculateSeconds:function(h,m,s){
             return Number(h)*3600 + Number(m)*60 + Number(s);

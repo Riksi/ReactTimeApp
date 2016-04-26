@@ -528,7 +528,7 @@ h1 span{
               data: activity,
               success: function(data){
                 if(data["full"]){alert('DB limit exceeded!')}
-                else{data["errors"]?alert('Please enter valid values'):this.setState({data: data, addShown: false});
+                else{data["errors"]?alert('Please enter valid values'):this.setState({data: data, addShown: false});}
               }.bind(this),
               error: function(xhr, status, err){
                 console.error(this.props.url, status, err.toString());

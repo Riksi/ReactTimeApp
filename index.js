@@ -10,14 +10,19 @@ var app = require('express')();
 var bodyParser = require('body-parser');
 var multer = require('multer'); // v1.0.5
 var upload = multer(); // for parsing multipart/form-data
-
+var port = process.env.PORT || 8080;
 app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 
 // Calls read and shows ongoing tasks
 app.get('/', function (req, res) {
    //res.sendFile(path.resolve("C:/Users/Anush/Toys/Discrete_Time/ReactApp/index.html"));
-   res.sendFile(path.join(__dirname, 'index.html'));
+   if(port == 8080){
+   	res.sendFile(path.join(__dirname, 'index_local.html'));
+   }
+   	else{
+   	res.sendFile(path.join(__dirname, 'index.html'));
+   	}
 })
 
 
@@ -83,7 +88,7 @@ app.post('/update', function(req,res){
 app.get('/detail', function(req,res){
 	res.send('Details ');
 })
-var port = process.env.PORT || 8080;
+
 app.listen(port, function() {
     console.log('Our app is running on http://localhost:' + port);
 });

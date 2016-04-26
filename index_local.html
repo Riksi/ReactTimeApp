@@ -29,7 +29,6 @@ or delete forms are present
 <html>
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>React Tutorial</title>
     <!-- Not present in the tutorial. Just for basic styling. -->
     <!--link rel="stylesheet" href="css/base.css" /-->
@@ -509,7 +508,6 @@ h1 span{
             this.loadActivitiesFromServer();
           },
           formDate: function(d,m,y){
-            console.log(new Date(y,m,d));
             return new Date(y,m,d).toString();
           },
           calculateSeconds:function(h,m,s){
@@ -522,7 +520,7 @@ h1 span{
               deadline: this.formDate(params.day,params.month,params.year)
             }
             $.ajax({
-              url: "https://peaceful-cliffs-68744.herokuapp.com/add",
+              url: "http://localhost:8080/add",
               dataType: 'json',
               type: 'POST',
               data: activity,
@@ -537,7 +535,7 @@ h1 span{
 
           handleComplete:function(id,complete){
             $.ajax({
-              url: "https://peaceful-cliffs-68744.herokuapp.com/complete",
+              url: "http://localhost:8080/complete",
               dataType: 'json',
               type: 'POST',
               data: {_id: id, complete: complete*1},
@@ -556,7 +554,7 @@ h1 span{
           }, 
           handleOKDelete:function(){
             $.ajax({
-              url: "https://peaceful-cliffs-68744.herokuapp.com/delete",
+              url: "http://localhost:8080/delete",
               dataType: 'json',
               type: 'POST',
               data: {_id: this.state.delete},
@@ -593,7 +591,7 @@ h1 span{
             }         
             if(choice == 'OK'){
               $.ajax({
-                url: "https://peaceful-cliffs-68744.herokuapp.com/edit",
+                url: "http://localhost:8080/edit",
                 dataType: 'json',
                 type: 'POST',
                 data: {_id: this.state.edit._id, params: activity},
@@ -613,7 +611,7 @@ h1 span{
           },
           handleInc: function(id,inc){
             $.ajax({
-              url: "https://peaceful-cliffs-68744.herokuapp.com/update",
+              url: "http://localhost:8080/update",
               dataType: 'json',
               type: 'POST',
               data: {_id: id, inc: inc},
@@ -1232,7 +1230,7 @@ h1 span{
             ]
 
         ReactDOM.render(
-          <ActivityBox url = "https://peaceful-cliffs-68744.herokuapp.com/read"/>,
+          <ActivityBox url = "http://localhost:8080/read"/>,
           document.getElementById('content')
         );
     </script>

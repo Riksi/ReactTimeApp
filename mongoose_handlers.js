@@ -16,8 +16,9 @@
 var mongoose = require('mongoose');
 var schema = require('./schema');
 var daySchema = require('./daySchema');
-
-mongoose.connect('mongodb://localhost:27017/discrete_time_test');
+//var uri = 'mongodb://localhost:27017/discrete_time_test'
+var uri = 'mongodb://heroku_r0fx58jg:enmu8irpaifffuip306dkcrmgf@ds013991.mlab.com:13991/heroku_r0fx58jg'
+mongoose.connect(uri);
 
 // Parameters are: model name, schema, collection name
 var Activity = mongoose.model('Activity', schema, 'activity');

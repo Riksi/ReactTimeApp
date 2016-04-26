@@ -1,6 +1,7 @@
 var mongodb = require('mongodb');
 
-var uri = 'mongodb://localhost:27017/discrete_time_test';
+//var uri = 'mongodb://localhost:27017/discrete_time_test';
+var uri = 'mongodb://heroku_r0fx58jg:enmu8irpaifffuip306dkcrmgf@ds013991.mlab.com:13991/heroku_r0fx58jg'
 mongodb.MongoClient.connect(uri, function(error, db) {
   if (error) {
     console.log(error);

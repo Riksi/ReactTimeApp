@@ -16,7 +16,8 @@ app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x
 
 // Calls read and shows ongoing tasks
 app.get('/', function (req, res) {
-   res.sendFile(path.resolve("C:/Users/Anush/Toys/Discrete_Time/ReactApp/index.html"));
+   //res.sendFile(path.resolve("C:/Users/Anush/Toys/Discrete_Time/ReactApp/index.html"));
+   res.sendFile(path.join(__dirname, 'index.html'));
 })
 
 

@@ -28,6 +28,7 @@ app.get('/', function (req, res) {
 
 // Called when you 
 app.post('/add', function(req,res){
+	console.log(new Date(req.body.deadline));
 	mongoose_handlers.add({
 	  name: req.body.name,
 	  target: req.body.target,
